@@ -28,6 +28,21 @@ const getSingleWine = async (req, res) => {
 const createWine = async(req, res) => {
     const {title, grape, color} = req.body
 
+    let emptyFields = []
+
+    if(!title){
+        emptyFields.push("title")
+    }
+    if(!grape){
+        emptyFields.push("grape")
+    }
+    if(!color){
+        emptyFields.push("color")
+    }
+    if(emptyFields.length > 0){
+        return res.status(400).json({errors: "Missing fields: ", emptyFields})
+    }
+
     //add doc to tb
     try{
         const wine = await Wine.create({title, grape, color})
