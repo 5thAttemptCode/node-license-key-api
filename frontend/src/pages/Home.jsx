@@ -18,7 +18,7 @@ export default function Home() {
     }
 
     fetchWines()
-  }, [])
+  }, [dispatch])
 
   return (
     <div className='home'>

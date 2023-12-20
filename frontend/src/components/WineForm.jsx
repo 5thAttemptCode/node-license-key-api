@@ -9,6 +9,7 @@ export default function WineForm() {
   const [ grape, setGrape ] = useState("")
   const [ color, setColor ] = useState("")
   const [ error, setError ] = useState(null)
+  const [ emptyFields, setEmptyFields ] = useState([])
 
   const handleSubmit= async (e) => {
     e.preventDefault()
@@ -23,16 +24,18 @@ export default function WineForm() {
             "Content-Type": "application/json"
         }
     })
-    const json = await response.json
+    const json = await response.json()
 
     if(!response.ok){
         setError(json.error)
+        setEmptyFields(json.emptyFields)
     }
     if(response.ok){
         setTitle("")//Reset the form after submit
         setGrape("")//Reset the form after submit
         setColor("")//Reset the form after submit
         setError(null)
+        setEmptyFields([])
         dispatch({type: "CREATE_WINE", payload: json})
     }
   }
@@ -46,18 +49,21 @@ export default function WineForm() {
             type="text" 
             onChange={(e) => setTitle(e.target.value)} 
             value={title}
+            className={emptyFields.includes("title") ? "error" : ""}
         />
         <label>Grape type</label>
         <input 
             type="text" 
             onChange={(e) => setGrape(e.target.value)} 
             value={grape}
+            className={emptyFields.includes("grape") ? "error" : ""}
         />
         <label>Color</label>
         <input 
             type="text" 
             onChange={(e) => setColor(e.target.value)} 
             value={color}
+            className={emptyFields.includes("color") ? "error" : ""}
         />
        
         <button>Add to collection</button>

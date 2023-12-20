@@ -8,10 +8,17 @@ export const winesReducer =(state, action) => {
             return {
                 wines: action.payload
             }
+
         case "CREATE_WINE":
             return {
                 wines: [action.payload, ...state.wines]
             }
+
+        case "DELETE_WINE":
+            return {
+                wines: state.wines.filter((w) => w._id !== action.payload._id)//if the id's are not equal, then we keep them in the array
+            }
+
         default:
             return state
     }
