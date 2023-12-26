@@ -1,18 +1,24 @@
 import React from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Home from './pages/Home'
 import Nav from './components/Nav'
-import { WineContextProvider } from './context/WineCOntext'
+import Login from './pages/Login'
+import SignUp from './pages/SignUp'
+import { useAuthContext } from './utils/useAuthContext'
+
+
 
 export default function App() {
+  const { user } = useAuthContext()
+
   return (
-    <WineContextProvider>
-      <BrowserRouter>
-        <Nav />
-        <Routes className="pages">
-          <Route path="/" element={<Home />} />
-        </Routes>
-      </BrowserRouter>
-    </WineContextProvider>
+    <BrowserRouter>
+      <Nav />
+      <Routes className="pages">
+        <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
+        <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
+        <Route path="/signup" element={!user ? <SignUp /> : <Navigate to="/" />} />
+      </Routes>
+    </BrowserRouter>
   )
 }

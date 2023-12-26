@@ -1,14 +1,24 @@
 import React from 'react'
 import { useWineContext } from '../utils/useWineContext'
+import { useAuthContext } from '../utils/useAuthContext'
 
 
 export default function WineCard({ wine }) {
 
   const { dispatch } = useWineContext()
+  const { user } = useAuthContext()
 
   const handleClick = async () => {
+
+    if(!user){
+      return
+    }
+
     const response = await fetch(`/api/wines/${wine._id}`, {
-      method: "DELETE"
+      method: "DELETE",
+      headers:{
+        "Authorization": `Bearer ${user.token}`
+      }
     })
     const json = await response.json()
 

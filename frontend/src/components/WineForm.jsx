@@ -1,9 +1,12 @@
 import React, { useState } from 'react'
 import { useWineContext } from '../utils/useWineContext'
+import { useAuthContext } from '../utils/useAuthContext'
+
 
 export default function WineForm() {
 
   const { dispatch } = useWineContext()
+  const { user } = useAuthContext()
   
   const [ title, setTitle ] = useState("")
   const [ grape, setGrape ] = useState("")
@@ -14,6 +17,11 @@ export default function WineForm() {
   const handleSubmit= async (e) => {
     e.preventDefault()
 
+    if(!user){
+        setError("Please login")
+        return
+    }
+
     const wine = {title, grape, color}
 
     const response = await fetch("/api/wines", {
@@ -21,7 +29,8 @@ export default function WineForm() {
         //this turns "const wine" into json string and sends it as a body
         body: JSON.stringify(wine),
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${user.token}`
         }
     })
     const json = await response.json()
