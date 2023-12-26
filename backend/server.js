@@ -1,6 +1,7 @@
 require("dotenv").config()
 const express = require("express")
 const wineRoutes = require("./routes/wines")
+const userRoutes = require("./routes/user")
 const mongoose = require("mongoose")
 
 
@@ -15,6 +16,7 @@ app.use((req, res, next) => {
 
 //Routes
 app.use("/api/wines", wineRoutes)
+app.use("/api/user", userRoutes)
 
 //Connect to DB
 mongoose.connect(process.env.VITE_MONGO_URI)

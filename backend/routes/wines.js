@@ -6,9 +6,12 @@ const { createWine,
         updateWine
       } = require("../controllers/wineController")
 
+const requireAuth = require("../middleware/requireAuth")
 //Router makes us have access to server
 const router = express.Router()
-//careers@kinde.com <careers@kinde.com>;
+
+//require auth for all wine aouth
+router.use(requireAuth)
 
 
 //GET all wines

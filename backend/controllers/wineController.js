@@ -3,7 +3,8 @@ const mongoose = require("mongoose")
 
 //GET all wines
 const getAllWines = async (req, res) => {
-    const wines = await Wine.find({}).sort({createdAt: -1})
+    const user_id = req.user._id
+    const wines = await Wine.find({ user_id }).sort({createdAt: -1})
     res.status(200).json(wines)
 }
 
@@ -43,9 +44,10 @@ const createWine = async(req, res) => {
         return res.status(400).json({errors: "Missing fields: ", emptyFields})
     }
 
-    //add doc to tb
+    //add doc to db
     try{
-        const wine = await Wine.create({title, grape, color})
+        const user_id = req.user._id
+        const wine = await Wine.create({title, grape, color, user_id})
         res.status(200).json(wine)
     } catch(error){
         res.status(400).json({error: error.message})

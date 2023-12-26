@@ -15,6 +15,10 @@ const wineSchema = new Schema({
     color: {
         type: String,
         required: true
+    },
+    user_id: {
+        type: String,
+        retuired: true
     }
 }, { timestamps: true })
 
