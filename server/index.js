@@ -3,8 +3,8 @@ const express = require("express")
 const cors = require("cors")
 const db = require("./db")
 const verifyToken = require("./authMiddleware")
-import { addLicense } from "./utils"
-import { sanitizeKey, sanitizeKey, sanitizeKey } from "./utils/trimmedKey"
+import { addLicense } from ("./utils/addLicense")
+import { sanitizeKey } from "./utils/trimmedKey"
 
 const app = express()
 const PORT = 3000
@@ -101,7 +101,7 @@ app.get("/admin/licenses", verifyToken, (req, res) => {
     )
     const licenses = stmt.all()
     // Wrap the json response in {} standard API shape
-    // (licenses) works too, returns an array with all db rows
+    //(licenses) works too, returns an array with all db rows
     res.json({ licenses })
   } catch(error){ 
     console.error(error)
@@ -197,7 +197,7 @@ app.delete("/admin/license", verifyToken, (req, res) => {
 })
 
 
-// Editing route
+// Editing route for license key and days valid
 app.put("/admin/license", verifyToken, (req, res) => {
   const oldKey = sanitizeKey(req.body.oldKey)
   const newKey = sanitizeKey(req.body.newKey)
@@ -233,18 +233,42 @@ app.put("/admin/license", verifyToken, (req, res) => {
     }
   }
 
-  // Prepare updated value
-  const updatedKey = newKey || oldKey
-  const updatedExpires = typeof daysValid === "number"
-    ? new Date(Date.now() + daysValid * 24 * 60 * 60 * 1000).toISOString()
-    : existing.expires
+  // Build dynamic SET clause 
+  // These arrays will dynamically build the SQL statement and the values for it fx: updates = ["key = ?", "expires = ?"]
+  const updates = []
+  const params = []
 
-  // Finale update
-  db.prepare("UPDATE licenses SET key = ?. expires = ? WHERE key =?").run(updatedKey, updatedExpires, oldKey)
+  // If the key is changing, add "key = ?" to the update list, and push the new key into the params array
+  if(newKey && newKey !== oldKey){
+    updates.push("key = ?")
+    params.push(newKey)
+  }
 
+  // If daysValid is provided, calculate the new expiry date and add it to the update.
+  if(typeof daysValid === "number"){
+    const expires = new Date(Date.now() + daysValid * 24 * 60 * 60 * 1000).toISOString()
+    updates.push("expires = ?")
+    params.push(expires)
+  }
+
+  // If no newKey or daysValid is entered, don’t run the update at all.
+  if(updates.length === 0){
+    return res.status(400).json({
+      error: true,
+      message: "Nothing to update. Provide newKey or daysValid."
+    })
+  }
+
+  // Run update - Joins the SQL SET clause together fx: UPDATE licenses SET key = ?, expires = ? WHERE key = ?
+  const updateQuery = `UPDATE licenses SET ${updates.join(", ")} WHERE key = ?`
+  // Add the original key at the end, for the WHERE key = ? part
+  params.push(oldKey)
+  db.prepare(updateQuery).run(...params)
+
+  // spread operator to avoid manually writing values
   res.status(200).json({
     message: "License key updated successfully",
-    key: updatedKey,
-    expires: updatedExpires
+    ...(newKey ? { key: newKey } : {}),
+    ...(typeof daysValid === "number" ? { expires: new Date(Date.now() + daysValid * 24 * 60 * 60 * 1000).toISOString() } : {})
   })
 })
