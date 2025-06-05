@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 const db = require("../db")
 const verifyToken = require("../authMiddleware")
-import { addLicense } from ("../utils/addLicense")
+const addLicense = require("../utils/addLicense")
 
 
 // Route for admin to add a license key to db

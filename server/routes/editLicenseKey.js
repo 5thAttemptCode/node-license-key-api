@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 const db = require("../db")
 const verifyToken = require("../authMiddleware")
-import { sanitizeKey } from "../utils/trimmedKey"
+const sanitizeKey = require("../utils/trimmedKey")
 
 
 // Editing route for license key and days-valid

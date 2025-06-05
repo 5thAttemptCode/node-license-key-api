@@ -1,4 +1,4 @@
-export function sanitizeKey(key){
+function sanitizeKey(key){
 
   if(typeof key !== "string") return null
 
@@ -6,3 +6,5 @@ export function sanitizeKey(key){
 
   return trimmedKey.length === 0 ? null : trimmedKey
 }
+
+module.exports = sanitizeKey

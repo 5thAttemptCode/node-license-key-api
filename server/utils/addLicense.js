@@ -1,4 +1,4 @@
-export function addLicense(db, key, daysValid = 5){
+function addLicense(db, key, daysValid = 5){
   
   const createdAt = new Date()
   const expiresAt = new Date(createdAt)
@@ -17,3 +17,5 @@ export function addLicense(db, key, daysValid = 5){
   
   return { db, key, daysValid }
 }
+
+module.exports = addLicense
