@@ -14,4 +14,14 @@ db.exec(`
   )
 `)
 
+// Creating an admins authentication table
+db.exec(`
+  CREATE TABLE IF NOT EXISTS admin (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    adminName TEXT UNIQUE NOT NULL,
+    adminPassword TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )
+`)
+
 module.exports = db
