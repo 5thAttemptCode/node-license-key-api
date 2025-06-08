@@ -2,8 +2,7 @@ const express = require("express")
 const router = express.Router()
 const db = require("../db")
 const verifyToken = require("../authMiddleware")
-const addLicense = require("../utils/addLicense")
-const sanitizeKey = require("../utils/trimmedKey")
+const { addLicense, devLog, sanitizeKey } = require("../utils")
 
 
 // Route for admin to add a license key to db
@@ -43,10 +42,7 @@ router.post("/admin/license", verifyToken, (req, res) => {
     })
   
   } catch(err){
-    // Only log detailed errors in development
-    if(process.env.NODE_ENV === "development") {
-      console.error("License insert error:", err)
-    }
+    devLog("License insert error: ", err)
     res.status(500).json({ 
       error: true,
       message: "Internal server error"

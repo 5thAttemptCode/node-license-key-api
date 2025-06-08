@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 const db = require("../db")
 const verifyToken = require("../authMiddleware")
-const sanitizeKey = require("../utils/trimmedKey")
+const { deleteLicense, sanitizeKey } = require("../utils")
 
 
 // Route for admin to delete a license key from db
@@ -18,17 +18,15 @@ router.delete("/admin/license", verifyToken, (req, res) => {
   }
 
   try{
-    const stmt = db.prepare("SELECT 1 FROM licenses WHERE key = ?")
-    const keyDeleteExist = stmt.get([ deletedKey ])
+    const result = deleteLicense(db, deletedKey)
 
-    if(!keyDeleteExist){
-      res.status(404).json({
-        message: "License key not found"
+    if(!result.success){
+      return res.status(404).json({
+        error: true,
+        message: result.message
       })
     }
 
-    const deleteStmt = db.prepare("DELETE FROM licenses WHERE key = ?")
-    deleteStmt.run([ deletedKey ])
     res.status(200).json({
       message: `License key ${deletedKey} deleted from database`
     })

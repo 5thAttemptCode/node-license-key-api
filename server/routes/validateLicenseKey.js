@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db")
-const sanitizeKey = require("../utils/trimmedKey")
+const { sanitizeKey } = require("../utils")
 
 
 // Route to validate the license key

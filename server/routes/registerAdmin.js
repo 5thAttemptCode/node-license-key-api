@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db")
-const hashPassword = require("../utils/hashPassword")
+const { hashPassword } = require("../utils")
 
 
 router.post("/admin/register", async (req, res) => {
