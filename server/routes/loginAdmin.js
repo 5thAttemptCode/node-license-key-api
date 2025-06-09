@@ -44,7 +44,8 @@ router.post("/admin/login", async (req, res) => {
     )
 
     res.json({
-      message: "Login successfull"
+      message: "Login successfull",
+      token
     })
   })
 })
