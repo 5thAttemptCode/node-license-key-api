@@ -5,5 +5,6 @@ module.exports = {
   editLicense: require("./db/editLicense"),
   generateLicenseKey: require("./auth/generateLicenseKey"),
   hashPassword: require("./auth/hashPassword"),
+  logAction: require("./logs/logAction"),
   sanitizeKey: require("./format/trimmedKey"),
 }
