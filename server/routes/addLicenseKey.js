@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 const db = require("../db")
 const verifyToken = require("../authMiddleware")
-const { addLicense, devLog, sanitizeKey } = require("../utils")
+const { addLicense, devLog, safeLogAction, sanitizeKey } = require("../utils/index")
 
 
 // Route for admin to add a license key to db
@@ -19,6 +19,11 @@ router.post("/admin/license", verifyToken, (req, res) => {
   }
 
   if(typeof daysValid !== "number" || isNaN(daysValid)) {
+     safeLogAction(
+      req,
+      "LICENSE_ADD_FAILED",
+      `Invalid daysValid value: ${req.body.daysValid}`
+    )
     return res.status(400).json({
       error: true,
       message: "Invalid daysValid value"
@@ -30,6 +35,11 @@ router.post("/admin/license", verifyToken, (req, res) => {
     const keyExist = stmt.get([ cleanedKey ]) // ?(positional parameters) - pass values as an array
    
     if(keyExist){
+      safeLogAction(
+        req,
+        "LICENSE_ADD_FAILED",
+        `Attempted to add existing key: ${cleanedKey}`
+      )
       return res.status(409).json({
         error: true,
         message: "License key already exist"
@@ -40,6 +50,12 @@ router.post("/admin/license", verifyToken, (req, res) => {
     res.status(200).json({
       message: `${cleanedKey} added to Database`
     })
+
+    safeLogAction(
+      req,
+      "LICENSE_ADDED",
+      `Added ${cleanedKey}, valid for ${daysValid} days`
+    )
   
   } catch(err){
     devLog("License insert error: ", err)

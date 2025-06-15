@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 const db = require("../db")
 const verifyToken = require("../authMiddleware")
-const { deleteLicense, sanitizeKey } = require("../utils")
+const { deleteLicense, safeLogAction, sanitizeKey } = require("../utils")
 
 
 // Route for admin to delete a license key from db
@@ -21,6 +21,11 @@ router.delete("/admin/license", verifyToken, (req, res) => {
     const result = deleteLicense(db, deletedKey)
 
     if(!result.success){
+      safeLogAction(
+        req,
+        "LICENSE_DELETE_FAILED",
+        `Attempted to delete non-existing key: ${deletedKey}`
+      )
       return res.status(404).json({
         error: true,
         message: result.message
@@ -30,6 +35,12 @@ router.delete("/admin/license", verifyToken, (req, res) => {
     res.status(200).json({
       message: `License key ${deletedKey} deleted from database`
     })
+
+    safeLogAction(
+      req,
+      "LICENSE_DELETED",
+      `License key ${deletedKey} deleted from database`
+    )
 
   } catch(err){
     console.error(err)
