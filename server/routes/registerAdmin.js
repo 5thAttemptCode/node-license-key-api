@@ -9,22 +9,25 @@ router.post("/admin/register", async (req, res) => {
 
   try{
     const hashedPassword = await hashPassword(adminPassword)
-    db.run("INSERT INTO admin (adminName, adminPassword) VALUES(?, ?)", [ adminName, hashedPassword ], function(err){
-      if(err && err.message.includes("UNIQUE constraint failed")){
-        return res.status(409).json({
-          error: true,
-          message: "Admin already exists"
-        })
-      }
-      res.json({
-        message: "Admin registration successful",
-        adminId: this.lastID
-      })
+    const stmt = db.prepare("INSERT INTO admin (adminName, adminPassword) VALUES (?, ?)")
+    const info = stmt.run(adminName, hashedPassword)
+
+    res.json({
+      message: "Admin registration successful",
+      adminId: info.lastInsertRowid,
     })
   } catch(error){
-    res.status(500).send({
+    if (err.message.includes("UNIQUE constraint failed")) {
+      return res.status(409).json({
+        error: true,
+        message: "Admin already exists",
+      })
+    }
+
+    console.error("Registration error:", err.message)
+    res.status(500).json({
       error: true,
-      message: "Server error."
+      message: "Server error.",
     })
   }
 })
