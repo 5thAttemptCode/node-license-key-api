@@ -5,7 +5,7 @@ const verifyToken = require("../authMiddleware")
 
 
 // Route for admin to get license keys
-router.get("/admin/licenseKeys", verifyToken, (req, res) => {
+router.get("/admin/license", verifyToken, (req, res) => {
   try{
     const expired = (req.query.expired || "").toString().toLowerCase()
     const stmt = db.prepare(
