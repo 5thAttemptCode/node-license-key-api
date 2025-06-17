@@ -12,5 +12,5 @@ rows.forEach((row) => {
   console.log(row)
 })
 
-// Close db - its important to repevent unwanted db behavior like memory leak etc
+// Close db - its important to prevent unwanted db behavior like memory leak etc
 db.close()
